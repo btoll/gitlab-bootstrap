@@ -1,0 +1,14 @@
+---
+- name: gl-group
+  projects:
+    - name: foo
+      tpl_name: hugo
+      visibility: public
+    - name: bar
+      tpl_name: android
+      visibility: public
+    - name: quux
+      tpl_name: dotnetcore
+      visibility: public
+---
+
