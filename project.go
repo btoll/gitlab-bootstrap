@@ -1,6 +1,6 @@
 // TODO:
-//   - add proper error handling
-//   - add support accepting `json` or `yaml` from `stdin`?
+// - add proper error handling
+// - add support accepting `json` or `yaml` from `stdin`?
 
 package main
 
@@ -11,10 +11,27 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
+func addProjectInvites(group *gitlab.Group, project Project) {
+	git := getClient()
+
+	projectID := fmt.Sprintf("%s/%s", group.Path, project.Name)
+	for _, invite := range project.Invites {
+		_, _, err := git.Invites.ProjectInvites(projectID, &gitlab.InvitesOptions{
+			Email:       &invite.Email,
+			AccessLevel: getAccessLevel(invite.AccessLevel),
+		})
+		if err != nil {
+			fmt.Printf("[ERROR] Invite for `%s` could not be sent for project `%s` -- %s\n", invite.Email, projectID, err)
+		} else {
+			fmt.Printf("[INFO] Invite for `%s` sent for project `%s`.\n", invite.Email, projectID)
+		}
+	}
+}
+
 func create(group *gitlab.Group, project Project) {
 	git := getClient()
 
-	//		var visibility gitlab.VisibilityValue = "public"
+	//	var visibility gitlab.VisibilityValue = "public"
 	_, _, err := git.Projects.CreateProject(&gitlab.CreateProjectOptions{
 		Name:         &project.Name,
 		NamespaceID:  &group.ID,
@@ -30,6 +47,10 @@ func create(group *gitlab.Group, project Project) {
 	} else {
 		fmt.Printf("[SUCCESS] Created project `%s`\n", projectID)
 		fmt.Printf("git clone git@gitlab.com:%s.git\n", projectID)
+
+		if len(project.Invites) > 0 {
+			addProjectInvites(group, project)
+		}
 	}
 }
 

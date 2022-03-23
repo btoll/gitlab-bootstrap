@@ -14,13 +14,27 @@
 - All projects are created from a default template.
     + https://gitlab.com/gitlab-org/project-templates
 
+- Sending invites will automatically add the invitee as a member to the project, if they have already created a GitLab account.  Otherwise, the invite will be pending.
+
 ## Examples
 
 ### Creating Projects
 
 ```
-$ go run main.go group.go user.go project.go -file examples/gitlab.yaml
+$ gitlab-client -file examples/gitlab.yaml
 ```
+
+### Access Levels
+
+These mostly map directly to the [Members API values].
+
+- None
+- Minimal
+- Guest
+- Reporter
+- Developer (default)
+- Maintainer
+- Owner
 
 ### Deleting Projects
 
@@ -29,7 +43,7 @@ To teardown what was setup when creating the projects, simply pass the same conf
 Or, pass another file or make your changes in the same one.  Pick your poison.
 
 ```
-$ go run main.go group.go user.go project.go -file examples/gitlab.yaml -destroy
+$ gitlab-client -file examples/gitlab.yaml -destroy
 ```
 
 > This will **not** ask for confirmation.
@@ -47,12 +61,20 @@ The tool expects an array of `group` objects.  Each `group` object consists of o
     - name: foo
       tpl_name: hugo
       visibility: public
+      invites:
+        - email: foobar@example.com
+          access_level: Developer
     - name: bar
       tpl_name: android
       visibility: public
     - name: quux
       tpl_name: dotnetcore
       visibility: public
+      invites:
+        - email: btoll@example.com
+          access_level: Guest
+        - email: kilgore-trout@example.com
+          access_level: Maintainer
 ---
 ```
 
@@ -73,5 +95,6 @@ This project uses the [`go-gitlab`] client library.
 
 [GitLab API token]: https://docs.gitlab.com/ee/security/token_overview.html
 [problems creating new groups]: https://gitlab.com/gitlab-org/gitlab/-/issues/244345
+[Members API values]: https://docs.gitlab.com/ee/development/permissions.html#members
 [`go-gitlab`]: https://github.com/xanzy/go-gitlab
 

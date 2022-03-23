@@ -23,9 +23,48 @@ type Group struct {
 }
 
 type Project struct {
-	Name       string `json:"name,omitempty" yaml:"name,omitempty"`
-	TplName    string `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty"`
-	Visibility string `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	Name       string   `json:"name,omitempty" yaml:"name,omitempty"`
+	TplName    string   `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty"`
+	Visibility string   `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	Invites    []Invite `json:"invites,omitempty" yaml:"invites,omitempty"`
+}
+
+type Invite struct {
+	AccessLevel string `json:"access_level,omitempty" yaml:"access_level,omitempty"`
+	Email       string `json:"email,omitempty" yaml:"email,omitempty"`
+}
+
+// https://docs.gitlab.com/ee/development/permissions.html#members
+const (
+	None       gitlab.AccessLevelValue = 0
+	Minimal                            = 5
+	Guest                              = 10
+	Reporter                           = 20
+	Developer                          = 30
+	Maintainer                         = 40
+	Owner                              = 50
+)
+
+func getAccessLevel(accessLevel string) *gitlab.AccessLevelValue {
+	var v gitlab.AccessLevelValue
+	switch accessLevel {
+	case "None":
+		v = None
+	case "Minimal":
+		v = Minimal
+	case "Guest":
+		v = Guest
+	case "Reporter":
+		v = Reporter
+	case "Maintainer":
+		v = Maintainer
+	case "Owner":
+		v = Owner
+	default:
+		v = Developer
+	}
+
+	return gitlab.AccessLevel(v)
 }
 
 var git *gitlab.Client
