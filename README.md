@@ -14,7 +14,7 @@
 - All projects are created from a default template.
     + https://gitlab.com/gitlab-org/project-templates
 
-- Sending invites will automatically add the invitee as a member to the project, if they have already created a GitLab account.  Otherwise, the invite will be pending.
+- Sending invites will automatically add the invitee as a member to the project, if they have already created a `GitLab` account.  Otherwise, the invite will be pending.
 
 ## Examples
 
@@ -35,6 +35,14 @@ These mostly map directly to the [Members API values].
 - Developer (default)
 - Maintainer
 - Owner
+
+### Issue Types
+
+These map directly to the `GitLab` API values.
+
+- Incident
+- Issue (default)
+- TestCase
 
 ### Deleting Projects
 

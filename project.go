@@ -51,6 +51,27 @@ func create(group *gitlab.Group, project Project) {
 		if len(project.Invites) > 0 {
 			addProjectInvites(group, project)
 		}
+
+		if len(project.Issues) > 0 {
+			createIssues(group, project)
+		}
+	}
+}
+
+func createIssues(group *gitlab.Group, project Project) {
+	git := getClient()
+
+	projectID := fmt.Sprintf("%s/%s", group.Path, project.Name)
+	for _, issue := range project.Issues {
+		_, _, err := git.Issues.CreateIssue(projectID, &gitlab.CreateIssueOptions{
+			Title:     &issue.Title,
+			IssueType: getIssueType(issue.Type),
+		})
+		if err != nil {
+			fmt.Printf("[ERROR] Issue `%s` could not be created for project `%s` -- %s\n", issue.Title, projectID, err)
+		} else {
+			fmt.Printf("[INFO] Issue `%s` created for project `%s`.\n", issue.Title, projectID)
+		}
 	}
 }
 

@@ -23,15 +23,40 @@ type Group struct {
 }
 
 type Project struct {
-	Name       string   `json:"name,omitempty" yaml:"name,omitempty"`
-	TplName    string   `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty"`
-	Visibility string   `json:"visibility,omitempty" yaml:"visibility,omitempty"`
-	Invites    []Invite `json:"invites,omitempty" yaml:"invites,omitempty"`
+	Name       string      `json:"name,omitempty" yaml:"name,omitempty"`
+	TplName    string      `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty"`
+	Visibility string      `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	Invites    []Invite    `json:"invites,omitempty" yaml:"invites,omitempty"`
+	Issues     []IssueType `json:"issues,omitempty" yaml:"issues,omitempty"`
 }
 
 type Invite struct {
 	AccessLevel string `json:"access_level,omitempty" yaml:"access_level,omitempty"`
 	Email       string `json:"email,omitempty" yaml:"email,omitempty"`
+}
+
+type IssueType struct {
+	Title string `json:"title,omitempty" yaml:"title,omitempty"`
+	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	Incident string = "incident"
+	Issue           = "issue"
+	TestCase        = "test_case"
+)
+
+func getIssueType(issueType string) *string {
+	var s string
+	switch issueType {
+	case Incident:
+		s = "incident"
+	case TestCase:
+		s = "test_case"
+	default:
+		s = "issue"
+	}
+	return gitlab.String(s)
 }
 
 // https://docs.gitlab.com/ee/development/permissions.html#members
