@@ -8,10 +8,10 @@ The goal of this project is a simple one: quickly and easily create as many `Git
 
 This project **only** supports the *creation* of the following `GitLab` objects:
 
-- Projects
-- Invites
-- Issues
-- Releases
+- [Projects]
+- [Invites]
+- [Issues]
+- [Releases]
 
 Its intent is to **only** create them with **only** the required configuration parameters.  If you need something more customized, you'll have to do that yourself.
 
@@ -31,33 +31,63 @@ Its intent is to **only** create them with **only** the required configuration p
 
 - Sending invites will automatically add the invitee as a member to the project, if they have already created a `GitLab` account.  Otherwise, the invite will be pending.
 
+## Fields
+
+### Creating [Projects]
+
+A list of `Project` objects composed of:
+
+- `name` (string)
+- `tpl_name` (string)
+- `visibility` (string)
+- [`invites`](#invites) (list of `Invites`)
+- [`issues`](#issues) (list of `Issues`)
+- [`releases`](#releases) (list of `Releases`)
+
+### [`invites`]
+
+A list of `Invite` objects composed of:
+
+- `access_level` (string)
+    + These values mostly map directly to the [Members API values].
+        - `None`
+        - `Minimal`
+        - `Guest`
+        - `Reporter`
+        - `Developer` (default)
+        - `Maintainer`
+        - `Owner`
+- `email` (string)
+
+### [`issues`]
+
+A list of `Issue` objects composed of:
+
+- `title` (string)
+- `type` (string)
+    + These values map directly to the `GitLab` API values.
+        - `Incident`
+        - `Issue` (default)
+        - `TestCase`
+
+### [`releases`]
+
+A list of `Release` objects composed of:
+
+- `name` (string)
+- `ref` (string)
+- `tag_name` (string)
+
+> For full examples in both `yaml` and `json`, see the `examples/` directory.
+
 ## Examples
 
 ### Creating Projects
 
 ```
 $ gitlab-client -file examples/gitlab.yaml
+$ gitlab-client -file examples/gitlab.json
 ```
-
-### Access Levels
-
-These mostly map directly to the [Members API values].
-
-- None
-- Minimal
-- Guest
-- Reporter
-- Developer (default)
-- Maintainer
-- Owner
-
-### Issue Types
-
-These map directly to the `GitLab` API values.
-
-- Incident
-- Issue (default)
-- TestCase
 
 ### Deleting Projects
 
@@ -128,6 +158,13 @@ $ go run main.go group.go project.go user.go -user btoll
 
 This project uses the [`go-gitlab`] client library.
 
+[Projects]: https://docs.gitlab.com/ee/api/projects.html
+[Invites]: https://docs.gitlab.com/ee/api/invitations.html
+[`invites`]: https://docs.gitlab.com/ee/api/invitations.html
+[Issues]: https://docs.gitlab.com/ee/api/issues.html
+[`issues`]: https://docs.gitlab.com/ee/api/issues.html
+[Releases]: https://docs.gitlab.com/ee/api/releases/
+[`releases`]: https://docs.gitlab.com/ee/api/releases/
 [`GitLab` API token]: https://docs.gitlab.com/ee/security/token_overview.html
 [problems creating new groups]: https://gitlab.com/gitlab-org/gitlab/-/issues/244345
 [Members API values]: https://docs.gitlab.com/ee/development/permissions.html#members
