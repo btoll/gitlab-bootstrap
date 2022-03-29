@@ -6,6 +6,11 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
+type Group struct {
+	Name     string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Projects []Project `json:"projects,omitempty" yaml:"projects,omitempty"`
+}
+
 func createGroup() {
 	git := getClient()
 	groupName := "derp"
