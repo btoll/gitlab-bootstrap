@@ -1,8 +1,23 @@
 # GitLab Client
 
+## What does this do?
+
+The goal of this project is a simple one: quickly and easily create as many `GitLab` projects as needed within an **existing** group.
+
+## What does this support?
+
+This project **only** supports the *creation* of the following `GitLab` objects:
+
+- Projects
+- Invites
+- Issues
+- Releases
+
+Its intent is to **only** create them with **only** the required configuration parameters.  If you need something more customized, you'll have to do that yourself.
+
 ## Requirements
 
-- [GitLab API token] with `api` scope
+- [`GitLab` API token] with `api` scope
 - A pre-existing group
     + The current API has [problems creating new groups]
 
@@ -72,6 +87,18 @@ The tool expects an array of `group` objects.  Each `group` object consists of o
       invites:
         - email: foobar@example.com
           access_level: Developer
+      issues:
+        - title: yo
+          type: TestCase
+        - title: humdinger
+          type: Incident
+      releases:
+        - name: test1
+          ref: master
+          tag_name: test1.0
+        - name: test2
+          ref: master
+          tag_name: test2.0
     - name: bar
       tpl_name: android
       visibility: public
@@ -101,7 +128,7 @@ $ go run main.go group.go project.go user.go -user btoll
 
 This project uses the [`go-gitlab`] client library.
 
-[GitLab API token]: https://docs.gitlab.com/ee/security/token_overview.html
+[`GitLab` API token]: https://docs.gitlab.com/ee/security/token_overview.html
 [problems creating new groups]: https://gitlab.com/gitlab-org/gitlab/-/issues/244345
 [Members API values]: https://docs.gitlab.com/ee/development/permissions.html#members
 [`go-gitlab`]: https://github.com/xanzy/go-gitlab

@@ -55,6 +55,10 @@ func create(group *gitlab.Group, project Project) {
 		if len(project.Issues) > 0 {
 			createIssues(group, project)
 		}
+
+		if len(project.Releases) > 0 {
+			createReleases(group, project)
+		}
 	}
 }
 
@@ -71,6 +75,24 @@ func createIssues(group *gitlab.Group, project Project) {
 			fmt.Printf("[ERROR] Issue `%s` could not be created for project `%s` -- %s\n", issue.Title, projectID, err)
 		} else {
 			fmt.Printf("[INFO] Issue `%s` created for project `%s`.\n", issue.Title, projectID)
+		}
+	}
+}
+
+func createReleases(group *gitlab.Group, project Project) {
+	git := getClient()
+
+	projectID := fmt.Sprintf("%s/%s", group.Path, project.Name)
+	for _, release := range project.Releases {
+		_, _, err := git.Releases.CreateRelease(projectID, &gitlab.CreateReleaseOptions{
+			Name:    &release.Name,
+			Ref:     &release.Ref,
+			TagName: &release.TagName,
+		})
+		if err != nil {
+			fmt.Printf("[ERROR] Release `%s` could not be created for project `%s` -- %s\n", release.Name, projectID, err)
+		} else {
+			fmt.Printf("[INFO] Release `%s` created for project `%s`.\n", release.Name, projectID)
 		}
 	}
 }

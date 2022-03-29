@@ -23,11 +23,18 @@ type Group struct {
 }
 
 type Project struct {
-	Name       string      `json:"name,omitempty" yaml:"name,omitempty"`
-	TplName    string      `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty"`
-	Visibility string      `json:"visibility,omitempty" yaml:"visibility,omitempty"`
-	Invites    []Invite    `json:"invites,omitempty" yaml:"invites,omitempty"`
-	Issues     []IssueType `json:"issues,omitempty" yaml:"issues,omitempty"`
+	Name       string      `json:"name,omitempty" yaml:"name,omitempty" omitempty:"name"`
+	TplName    string      `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty" omitempty:"tpl_name"`
+	Visibility string      `json:"visibility,omitempty" yaml:"visibility,omitempty" omitempty:"visibility"`
+	Invites    []Invite    `json:"invites,omitempty" yaml:"invites,omitempty" omitempty:"invites"`
+	Issues     []IssueType `json:"issues,omitempty" yaml:"issues,omitempty" omitempty:"issues"`
+	Releases   []Release   `json:"releases,omitempty" yaml:"releases" omitempty:"releases"`
+}
+
+type Release struct {
+	Name    string `json:"name,omitempty" yaml:"name" omitempty:"name"`
+	Ref     string `json:"ref,omitempty" yaml:"ref" omitempty:"ref"`
+	TagName string `json:"tag_name,omitempty" yaml:"tag_name" omitempty:"tag_name"`
 }
 
 type Invite struct {

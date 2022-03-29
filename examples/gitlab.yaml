@@ -4,6 +4,75 @@
     - name: foo
       tpl_name: hugo
       visibility: public
+      issues:
+        - title: yo
+          type: TestCase
+        - title: humdinger
+          type: Incident
+      releases:
+        - name: test1
+          ref: master
+          tag_name: test1.0
+        - name: test2
+          ref: master
+          tag_name: test2.0
+        - name: test3
+          ref: master
+          tag_name: test3.0
+        - name: test4
+          ref: master
+          tag_name: test4.0
+        - name: test5
+          ref: master
+          tag_name: test5.0
+        - name: test6
+          ref: master
+          tag_name: test6.0
+        - name: test7
+          ref: master
+          tag_name: test7.0
+        - name: test8
+          ref: master
+          tag_name: test8.0
+        - name: test9
+          ref: master
+          tag_name: test9.0
+        - name: test10
+          ref: master
+          tag_name: test10.0
+        - name: test11
+          ref: master
+          tag_name: test11.0
+        - name: test12
+          ref: master
+          tag_name: test12.0
+        - name: test13
+          ref: master
+          tag_name: test13.0
+        - name: test14
+          ref: master
+          tag_name: test14.0
+        - name: test15
+          ref: master
+          tag_name: test15.0
+        - name: test16
+          ref: master
+          tag_name: test16.0
+        - name: test17
+          ref: master
+          tag_name: test17.0
+        - name: test18
+          ref: master
+          tag_name: test18.0
+        - name: test19
+          ref: master
+          tag_name: test19.0
+        - name: test20
+          ref: master
+          tag_name: test20.0
+        - name: test21
+          ref: master
+          tag_name: test21.0
     - name: bar
       tpl_name: android
       visibility: public
