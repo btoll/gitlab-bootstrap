@@ -5,7 +5,44 @@
             {
                 "name": "foo",
                 "tpl_name": "hugo",
-                "visibility": "public"
+                "visibility": "public",
+                "invites": [
+                    {
+                        "email": "btoll@example.com",
+                        "access_level": "Guest"
+                    },
+                    {
+                        "email": "kilgore-trout@example.com",
+                        "access_level": "Maintainer"
+                    }
+                ],
+                "issues": [
+                    {
+                        "title": "yo",
+                        "type": "TestCase"
+                    },
+                    {
+                        "title": "humdinger",
+                        "type": "Incident"
+                    }
+                ],
+                "releases": [
+                    {
+                        "name": "test1",
+                        "ref": "master",
+                        "tag_name": "test1.0"
+                    },
+                    {
+                        "name": "test2",
+                        "ref": "master",
+                        "tag_name": "test2.0"
+                    },
+                    {
+                        "name": "test3",
+                        "ref": "master",
+                        "tag_name": "test3.0"
+                    }
+                ]
             },
             {
                 "name": "bar",
