@@ -31,6 +31,8 @@ Its intent is to **only** create them with **only** the required configuration p
 
 - Sending invites will automatically add the invitee as a member to the project, if they have already created a `GitLab` account.  Otherwise, the invite will be pending.
 
+- Both `yaml` and `json` data formats are supported.
+
 ## Fields
 
 ### Creating [Projects]
@@ -75,8 +77,12 @@ A list of `Issue` objects composed of:
 A list of `Release` objects composed of:
 
 - `name` (string)
-- `ref` (string)
+- `ref` (\*string)
 - `tag_name` (string)
+- `description` (string)
+- `milestones` ([]string)
+- `assets` ([`gitlab.ReleaseAssetsOptions`])
+- `released_at` ([`time.Time`])
 
 > For full examples in both `yaml` and `json`, see the `examples/` directory.
 
@@ -100,50 +106,6 @@ $ gitlab-client -file examples/gitlab.yaml -destroy
 ```
 
 > This will **not** ask for confirmation.
-
-## Config Example
-
-The tool expects an array of `group` objects.  Each `group` object consists of one or more `project`s.
-
-`gitlab.yaml`
-
-```
----
-- name: gl-group
-  projects:
-    - name: foo
-      tpl_name: hugo
-      visibility: public
-      invites:
-        - email: foobar@example.com
-          access_level: Developer
-      issues:
-        - title: yo
-          type: TestCase
-        - title: humdinger
-          type: Incident
-      releases:
-        - name: test1
-          ref: master
-          tag_name: test1.0
-        - name: test2
-          ref: master
-          tag_name: test2.0
-    - name: bar
-      tpl_name: android
-      visibility: public
-    - name: quux
-      tpl_name: dotnetcore
-      visibility: public
-      invites:
-        - email: btoll@example.com
-          access_level: Guest
-        - email: kilgore-trout@example.com
-          access_level: Maintainer
----
-```
-
-> In addition to `yaml`, `json` is supported.
 
 ## Testing
 
@@ -169,4 +131,6 @@ This project uses the [`go-gitlab`] client library.
 [problems creating new groups]: https://gitlab.com/gitlab-org/gitlab/-/issues/244345
 [Members API values]: https://docs.gitlab.com/ee/development/permissions.html#members
 [`go-gitlab`]: https://github.com/xanzy/go-gitlab
+[`gitlab.ReleaseAssetsOptions`]: https://pkg.go.dev/github.com/xanzy/go-gitlab#ReleaseAssetsOptions
+[`time.Time`]: https://pkg.go.dev/time#Time
 

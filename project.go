@@ -3,23 +3,28 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/xanzy/go-gitlab"
 )
 
 type Project struct {
-	Name       string      `json:"name,omitempty" yaml:"name,omitempty" omitempty:"name"`
-	TplName    string      `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty" omitempty:"tpl_name"`
-	Visibility string      `json:"visibility,omitempty" yaml:"visibility,omitempty" omitempty:"visibility"`
-	Invites    []Invite    `json:"invites,omitempty" yaml:"invites,omitempty" omitempty:"invites"`
-	Issues     []IssueType `json:"issues,omitempty" yaml:"issues,omitempty" omitempty:"issues"`
-	Releases   []Release   `json:"releases,omitempty" yaml:"releases" omitempty:"releases"`
+	Name       string      `json:"name,omitempty" ymal:"name,omitempty"`
+	TplName    string      `json:"tpl_name,omitempty" ymal:"tpl_name,omitempty"`
+	Visibility string      `json:"visibility,omitempty" ymal:"visibility,omitempty"`
+	Invites    []Invite    `json:"invites,omitempty" ymal:"invites,omitempty"`
+	Issues     []IssueType `json:"issues,omitempty" ymal:"issues,omitempty"`
+	Releases   []Release   `json:"releases,omitempty" ymal:"releases,omitempty"`
 }
 
 type Release struct {
-	Name    string `json:"name,omitempty" yaml:"name" omitempty:"name"`
-	Ref     string `json:"ref,omitempty" yaml:"ref" omitempty:"ref"`
-	TagName string `json:"tag_name,omitempty" yaml:"tag_name" omitempty:"tag_name"`
+	Name        string                      `json:"name,omitempty" ymal:"name,omitempty"`
+	TagName     string                      `json:"tag_name,omitempty" ymal:"tag_name,omitempty"`
+	Description string                      `json:"description,omitempty" ymal:"description,omitempty"`
+	Ref         *string                     `json:"ref,omitempty" ymal:"ref,omitempty"`
+	Milestones  []string                    `json:"milestones,omitempty" ymal:"milestones,omitempty"`
+	Assets      gitlab.ReleaseAssetsOptions `json:"assets,omitempty" ymal:"assets,omitempty"`
+	ReleasedAt  time.Time                   `json:"released_at,omitempty" ymal:"released_at,omitempty"`
 }
 
 type Invite struct {
@@ -159,10 +164,19 @@ func (pc ProjectCtx) issues() {
 
 func (pc ProjectCtx) releases() {
 	for _, release := range pc.Project.Releases {
+		if release.Ref == nil {
+			branch := "master"
+			release.Ref = &branch
+			fmt.Printf("[INFO] `ref` not defined for release `%s`, defaulting to `%s`.\n", release.Name, branch)
+		}
 		_, _, err := pc.Client.Releases.CreateRelease(pc.ProjectID, &gitlab.CreateReleaseOptions{
-			Name:    &release.Name,
-			Ref:     &release.Ref,
-			TagName: &release.TagName,
+			Name:        &release.Name,
+			Ref:         release.Ref,
+			TagName:     &release.TagName,
+			Description: &release.Description,
+			Milestones:  &release.Milestones,
+			Assets:      &release.Assets,
+			ReleasedAt:  &release.ReleasedAt,
 		})
 		if err != nil {
 			fmt.Printf("[ERROR] Release `%s` could not be created for project `%s` -- %s\n", release.Name, pc.ProjectID, err)
