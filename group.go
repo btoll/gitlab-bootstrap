@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/xanzy/go-gitlab"
 )
 
@@ -11,22 +9,22 @@ type Group struct {
 	Projects []Project `json:"projects,omitempty" yaml:"projects,omitempty"`
 }
 
-func createGroup() {
-	git := getClient()
-	groupName := "derp"
-	var groupVisibility gitlab.VisibilityValue
-	groupVisibility = "public"
-	groupPath := "https://gitlab.com/"
-	group, _, err := git.Groups.CreateGroup(&gitlab.CreateGroupOptions{
-		Name:       &groupName,
-		Path:       &groupPath,
-		Visibility: &groupVisibility,
-	})
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("group", group)
-}
+//func createGroup() {
+//	git := getClient()
+//	groupName := "derp"
+//	var groupVisibility gitlab.VisibilityValue
+//	groupVisibility = "public"
+//	groupPath := "https://gitlab.com/"
+//	group, _, err := git.Groups.CreateGroup(&gitlab.CreateGroupOptions{
+//		Name:       &groupName,
+//		Path:       &groupPath,
+//		Visibility: &groupVisibility,
+//	})
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Println("group", group)
+//}
 
 func getGroup(g Group) (*gitlab.Group, error) {
 	git := getClient()

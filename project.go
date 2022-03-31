@@ -39,8 +39,8 @@ type IssueType struct {
 
 const (
 	Incident string = "incident"
-	Issue           = "issue"
-	TestCase        = "test_case"
+	Issue    string = "issue"
+	TestCase string = "test_case"
 )
 
 func getIssueType(issueType string) *string {
@@ -48,6 +48,8 @@ func getIssueType(issueType string) *string {
 	switch issueType {
 	case Incident:
 		s = "incident"
+	case Issue:
+		s = "issue"
 	case TestCase:
 		s = "test_case"
 	default:
@@ -59,12 +61,12 @@ func getIssueType(issueType string) *string {
 // https://docs.gitlab.com/ee/development/permissions.html#members
 const (
 	None       gitlab.AccessLevelValue = 0
-	Minimal                            = 5
-	Guest                              = 10
-	Reporter                           = 20
-	Developer                          = 30
-	Maintainer                         = 40
-	Owner                              = 50
+	Minimal    gitlab.AccessLevelValue = 5
+	Guest      gitlab.AccessLevelValue = 10
+	Reporter   gitlab.AccessLevelValue = 20
+	Developer  gitlab.AccessLevelValue = 30
+	Maintainer gitlab.AccessLevelValue = 40
+	Owner      gitlab.AccessLevelValue = 50
 )
 
 func getAccessLevel(accessLevel string) *gitlab.AccessLevelValue {
