@@ -1,7 +1,12 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
+	"path/filepath"
+
 	"github.com/xanzy/go-gitlab"
+	"gopkg.in/yaml.v2"
 )
 
 type Group struct {
@@ -38,4 +43,23 @@ func getGroup(g Group) (*gitlab.Group, error) {
 		return groups[0], nil
 	}
 	return nil, err
+}
+
+func getGroups(filename string) ([]Group, error) {
+	content, err := getFileContents(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	var groups []Group
+	extension := filepath.Ext(filename)
+	if extension == ".json" {
+		err = json.Unmarshal(content, &groups)
+	} else if extension == ".yaml" {
+		err = yaml.Unmarshal(content, &groups)
+	} else {
+		err = errors.New("[ERROR] File extension not recognized, must be either `json` or `yaml`.")
+	}
+
+	return groups, err
 }

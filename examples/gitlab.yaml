@@ -27,8 +27,13 @@
     - name: bar
       tpl_name: android
       visibility: public
+      api:
+        - name: releases
+          filename: releases.json
     - name: quux
       tpl_name: dotnetcore
       visibility: public
----
+      api:
+        - name: releases
+          project_id: 35034938
 

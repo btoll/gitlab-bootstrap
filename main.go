@@ -1,36 +1,39 @@
 // TODO:
 //   - add proper error handling
-//   - add support accepting `json` or `yaml` from `stdin`?
+//	 - use a MultiWriter for the logging, i.e.,
+//			mw := io.MultiWriter(os.Stdout, logFile)
+//			logrus.SetOutput(mw)
 
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/xanzy/go-gitlab"
-	"gopkg.in/yaml.v2"
 )
 
-var git *gitlab.Client
+var gitlabClient *gitlab.Client
 var singleClient *bool
 
 func getClient() *gitlab.Client {
 	var err error
 	if singleClient == nil {
-		git, err = gitlab.NewClient(getToken())
+		gitlabClient, err = gitlab.NewClient(getToken())
 		if err != nil {
 			log.Fatalf("Failed to create client: %v", err)
 		}
 		b := true
 		singleClient = &b
 	}
-	return git
+	return gitlabClient
+}
+
+func getFileContents(filename string) ([]byte, error) {
+	return ioutil.ReadFile(filename)
 }
 
 func getToken() string {
@@ -39,30 +42,6 @@ func getToken() string {
 		panic("[ERROR] Must set $GITLAB_API_PRIVATE_TOKEN")
 	}
 	return apiToken
-}
-
-func parseFile(filename string) ([]Group, error) {
-	// Move into a readfile function?
-	content, err := ioutil.ReadFile(filename)
-	if err != nil {
-		panic(err)
-	}
-
-	var groups []Group
-	extension := filepath.Ext(filename)
-	if extension == ".json" {
-		err = json.Unmarshal(content, &groups)
-	} else if extension == ".yaml" {
-		err = yaml.Unmarshal(content, &groups)
-	} else {
-		panic("[ERROR] File extension not recognized, must be either `json` or `yaml`.")
-	}
-
-	if err != nil {
-		panic(err)
-	}
-
-	return groups, err
 }
 
 func main() {
@@ -80,7 +59,7 @@ func main() {
 		fmt.Println("user", user.ID)
 		getUserProjects(user.ID)
 	} else if *filename != "" {
-		groups, err := parseFile(*filename)
+		groups, err := getGroups(*filename)
 		if err != nil {
 			panic(err)
 		}

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/xanzy/go-gitlab"
 )
@@ -12,82 +11,16 @@ type Project struct {
 	Name       string      `json:"name,omitempty" ymal:"name,omitempty"`
 	TplName    string      `json:"tpl_name,omitempty" ymal:"tpl_name,omitempty"`
 	Visibility string      `json:"visibility,omitempty" ymal:"visibility,omitempty"`
+	API        *[]API      `json:"api,omitempty" ymal:"api,omitempty"`
 	Invites    []Invite    `json:"invites,omitempty" ymal:"invites,omitempty"`
 	Issues     []IssueType `json:"issues,omitempty" ymal:"issues,omitempty"`
 	Releases   []Release   `json:"releases,omitempty" ymal:"releases,omitempty"`
 }
 
-type Release struct {
-	Name        string                      `json:"name,omitempty" ymal:"name,omitempty"`
-	TagName     string                      `json:"tag_name,omitempty" ymal:"tag_name,omitempty"`
-	Description string                      `json:"description,omitempty" ymal:"description,omitempty"`
-	Ref         *string                     `json:"ref,omitempty" ymal:"ref,omitempty"`
-	Milestones  []string                    `json:"milestones,omitempty" ymal:"milestones,omitempty"`
-	Assets      gitlab.ReleaseAssetsOptions `json:"assets,omitempty" ymal:"assets,omitempty"`
-	ReleasedAt  time.Time                   `json:"released_at,omitempty" ymal:"released_at,omitempty"`
-}
-
-type Invite struct {
-	AccessLevel string `json:"access_level,omitempty" yaml:"access_level,omitempty"`
-	Email       string `json:"email,omitempty" yaml:"email,omitempty"`
-}
-
-type IssueType struct {
-	Title string `json:"title,omitempty" yaml:"title,omitempty"`
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
-}
-
-const (
-	Incident string = "incident"
-	Issue    string = "issue"
-	TestCase string = "test_case"
-)
-
-func getIssueType(issueType string) *string {
-	var s string
-	switch issueType {
-	case Incident:
-		s = "incident"
-	case Issue:
-		s = "issue"
-	case TestCase:
-		s = "test_case"
-	default:
-		s = "issue"
-	}
-	return gitlab.String(s)
-}
-
-// https://docs.gitlab.com/ee/development/permissions.html#members
-const (
-	None       gitlab.AccessLevelValue = 0
-	Minimal    gitlab.AccessLevelValue = 5
-	Guest      gitlab.AccessLevelValue = 10
-	Reporter   gitlab.AccessLevelValue = 20
-	Developer  gitlab.AccessLevelValue = 30
-	Maintainer gitlab.AccessLevelValue = 40
-	Owner      gitlab.AccessLevelValue = 50
-)
-
-func getAccessLevel(accessLevel string) *gitlab.AccessLevelValue {
-	var v gitlab.AccessLevelValue
-	switch accessLevel {
-	case "None":
-		v = None
-	case "Minimal":
-		v = Minimal
-	case "Guest":
-		v = Guest
-	case "Reporter":
-		v = Reporter
-	case "Maintainer":
-		v = Maintainer
-	case "Owner":
-		v = Owner
-	default:
-		v = Developer
-	}
-	return gitlab.AccessLevel(v)
+type API struct {
+	Name      string  `json:"name,omitempty" ymal:"name,omitempty"`
+	ProjectID *string `json:"project_id,omitempty" ymal:"project_id,omitempty"`
+	Filename  *string `json:"filename,omitempty" yaml:"filename,omitempty"`
 }
 
 type ProjectCtx struct {
@@ -96,6 +29,8 @@ type ProjectCtx struct {
 	Project   Project
 	ProjectID string // projectID == NAMESPACE/PROJECT_NAME
 }
+
+type replaceFunc map[string]func(*ProjectCtx, API)
 
 func (pc ProjectCtx) create() {
 	//	var visibility gitlab.VisibilityValue = "public"
@@ -114,15 +49,15 @@ func (pc ProjectCtx) create() {
 		fmt.Printf("git clone git@gitlab.com:%s.git\n", pc.ProjectID)
 
 		if len(pc.Project.Invites) > 0 {
-			pc.invites()
+			pc.createInvites()
 		}
 
 		if len(pc.Project.Issues) > 0 {
-			pc.issues()
+			pc.createIssues()
 		}
 
 		if len(pc.Project.Releases) > 0 {
-			pc.releases()
+			pc.createReleases()
 		}
 	}
 }
@@ -136,54 +71,16 @@ func (pc ProjectCtx) delete() {
 	}
 }
 
-func (pc ProjectCtx) invites() {
-	for _, invite := range pc.Project.Invites {
-		_, _, err := pc.Client.Invites.ProjectInvites(pc.ProjectID, &gitlab.InvitesOptions{
-			Email:       &invite.Email,
-			AccessLevel: getAccessLevel(invite.AccessLevel),
-		})
-		if err != nil {
-			fmt.Printf("[ERROR] Invite for `%s` could not be sent for project `%s` -- %s\n", invite.Email, pc.ProjectID, err)
-		} else {
-			fmt.Printf("[INFO] Invite for `%s` sent for project `%s`.\n", invite.Email, pc.ProjectID)
-		}
+// This doesn't take a receiver because it needs to pass a pointer to the funcmap.
+func replace(pc *ProjectCtx) {
+	funcmap := replaceFunc{
+		"invites":  replaceInvites,
+		"issues":   replaceIssues,
+		"releases": replaceReleases,
 	}
-}
-
-func (pc ProjectCtx) issues() {
-	for _, issue := range pc.Project.Issues {
-		_, _, err := pc.Client.Issues.CreateIssue(pc.ProjectID, &gitlab.CreateIssueOptions{
-			Title:     &issue.Title,
-			IssueType: getIssueType(issue.Type),
-		})
-		if err != nil {
-			fmt.Printf("[ERROR] Issue `%s` could not be created for project `%s` -- %s\n", issue.Title, pc.ProjectID, err)
-		} else {
-			fmt.Printf("[INFO] Issue `%s` created for project `%s`.\n", issue.Title, pc.ProjectID)
-		}
-	}
-}
-
-func (pc ProjectCtx) releases() {
-	for _, release := range pc.Project.Releases {
-		if release.Ref == nil {
-			branch := "master"
-			release.Ref = &branch
-			fmt.Printf("[INFO] `ref` not defined for release `%s`, defaulting to `%s`.\n", release.Name, branch)
-		}
-		_, _, err := pc.Client.Releases.CreateRelease(pc.ProjectID, &gitlab.CreateReleaseOptions{
-			Name:        &release.Name,
-			Ref:         release.Ref,
-			TagName:     &release.TagName,
-			Description: &release.Description,
-			Milestones:  &release.Milestones,
-			Assets:      &release.Assets,
-			ReleasedAt:  &release.ReleasedAt,
-		})
-		if err != nil {
-			fmt.Printf("[ERROR] Release `%s` could not be created for project `%s` -- %s\n", release.Name, pc.ProjectID, err)
-		} else {
-			fmt.Printf("[INFO] Release `%s` created for project `%s`.\n", release.Name, pc.ProjectID)
+	if pc.Project.API != nil {
+		for _, field := range *pc.Project.API {
+			funcmap[field.Name](pc, field)
 		}
 	}
 }
@@ -207,6 +104,7 @@ func process(g Group, projects []Project, destroy bool) {
 		pc.ProjectID = fmt.Sprintf("%s/%s", group.Path, project.Name)
 		go func(pc ProjectCtx) {
 			if !destroy {
+				replace(&pc)
 				pc.create()
 			} else {
 				pc.delete()
