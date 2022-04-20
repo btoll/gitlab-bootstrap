@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/xanzy/go-gitlab"
 )
@@ -33,7 +34,11 @@ func getClient() *gitlab.Client {
 }
 
 func getFileContents(filename string) ([]byte, error) {
-	return ioutil.ReadFile(filename)
+	f, err := filepath.Abs(filename)
+	if err != nil {
+		panic(err)
+	}
+	return ioutil.ReadFile(f)
 }
 
 func getToken() string {
@@ -59,11 +64,10 @@ func main() {
 		fmt.Println("user", user.ID)
 		getUserProjects(user.ID)
 	} else if *filename != "" {
-		groups, err := getGroups(*filename)
+		configs, err := getGroupConfigs(*filename)
 		if err != nil {
 			panic(err)
 		}
-
-		processProjects(groups, *destroy)
+		processProjects(configs, *destroy)
 	}
 }

@@ -7,7 +7,7 @@ BIN_NATIVE=${BIN_NAME}_${GOARCH}-${GOOS}
 BIN_MACOS=${BIN_NAME}_${ARCH}-${MACOS}
 BIN_WIN=${BIN_NAME}_${ARCH}-${WIN}
 
-.PHONY: build clean lint
+.PHONY: build clean debug lint
 
 build:
 	${CC} build -o ${BIN_NATIVE}
@@ -19,6 +19,11 @@ clean:
 	rm -f ${BIN_NATIVE}
 	rm -f ${BIN_MACOS}
 	rm -f ${BIN_WIN}
+	rm -f ${BIN_NAME}
+
+debug:
+	go build
+	dlv exec ./${BIN_NAME} -- --file examples/gitlab.json
 
 lint:
 	golangci-lint run

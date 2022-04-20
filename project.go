@@ -69,6 +69,17 @@ func (pc ProjectCtx) delete() {
 	} else {
 		fmt.Printf("[SUCCESS] Deleted project `%s`\n", pc.ProjectID)
 	}
+
+	for k, v := range getGroupIDs() {
+		if k != "gl-group" {
+			_, err = deleteGroup(v)
+			if err != nil {
+				fmt.Printf("[ERROR] Group `%s` could not be deleted -- %s\n", k, err)
+			} else {
+				fmt.Printf("[SUCCESS] Deleted group `%s`\n", k)
+			}
+		}
+	}
 }
 
 // This doesn't take a receiver because it needs to pass a pointer to the funcmap.
@@ -85,14 +96,21 @@ func replace(pc *ProjectCtx) {
 	}
 }
 
-func process(g Group, projects []Project, destroy bool) {
+func process(config Group, projects []Project, destroy bool) {
 	var wg sync.WaitGroup
 	wg.Add(len(projects))
 
-	group, err := getGroup(g)
+	group, err := getGroup(config)
+	//	LookupGroup(group)
 	if err != nil {
 		panic(err)
 	}
+
+	if group == nil && config.Parent != nil {
+		group = createSubgroup(config)
+	}
+
+	addGroup(config.Group, group.ID)
 
 	pc := ProjectCtx{
 		Client: getClient(),
@@ -101,7 +119,7 @@ func process(g Group, projects []Project, destroy bool) {
 
 	for _, project := range projects {
 		pc.Project = project
-		pc.ProjectID = fmt.Sprintf("%s/%s", group.Path, project.Name)
+		pc.ProjectID = fmt.Sprintf("%s/%s", group.FullPath, project.Name)
 		go func(pc ProjectCtx) {
 			if !destroy {
 				replace(&pc)
@@ -116,8 +134,9 @@ func process(g Group, projects []Project, destroy bool) {
 	wg.Wait()
 }
 
-func processProjects(g []Group, destroy bool) {
-	for i := 0; i < len(g); i++ {
-		process(g[i], g[i].Projects, destroy)
+func processProjects(configs []Group, destroy bool) {
+	GroupIDs = make(GroupMap)
+	for _, config := range configs {
+		process(config, config.Projects, destroy)
 	}
 }

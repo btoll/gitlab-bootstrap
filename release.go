@@ -54,6 +54,7 @@ func (pc ProjectCtx) createReleases() {
 	}
 }
 
+// TODO: Support pagination.
 func getReleases(filename string) ([]Release, error) {
 	content, err := getFileContents(filename)
 	if err != nil {
