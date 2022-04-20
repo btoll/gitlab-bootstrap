@@ -7,30 +7,32 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
-	"fmt"
 	"io/ioutil"
-	"log"
-	"os"
 	"path/filepath"
 
-	"github.com/xanzy/go-gitlab"
+	"gopkg.in/yaml.v2"
 )
 
-var gitlabClient *gitlab.Client
-var singleClient *bool
-
-func getClient() *gitlab.Client {
-	var err error
-	if singleClient == nil {
-		gitlabClient, err = gitlab.NewClient(getToken())
-		if err != nil {
-			log.Fatalf("Failed to create client: %v", err)
-		}
-		b := true
-		singleClient = &b
+func getConfigs(filename string) ([]Group, error) {
+	content, err := getFileContents(filename)
+	if err != nil {
+		panic(err)
 	}
-	return gitlabClient
+
+	var groups []Group
+	extension := filepath.Ext(filename)
+	if extension == ".json" {
+		err = json.Unmarshal(content, &groups)
+	} else if extension == ".yaml" {
+		err = yaml.Unmarshal(content, &groups)
+	} else {
+		err = errors.New("[ERROR] File extension not recognized, must be either `json` or `yaml`.")
+	}
+
+	return groups, err
 }
 
 func getFileContents(filename string) ([]byte, error) {
@@ -41,14 +43,6 @@ func getFileContents(filename string) ([]byte, error) {
 	return ioutil.ReadFile(f)
 }
 
-func getToken() string {
-	apiToken, isSet := os.LookupEnv("GITLAB_API_PRIVATE_TOKEN")
-	if apiToken == "" || !isSet {
-		panic("[ERROR] Must set $GITLAB_API_PRIVATE_TOKEN")
-	}
-	return apiToken
-}
-
 func main() {
 	filename := flag.String("file", "", "Path to GitLab config file (json or yaml).")
 	user := flag.String("user", "", "List everything for the given user.")
@@ -57,17 +51,18 @@ func main() {
 
 	if *user != "" {
 		// TODO
-		user, err := getUser(*user)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("user", user.ID)
-		getUserProjects(user.ID)
+		//		user, err := getUser(*user)
+		//		if err != nil {
+		//			panic(err)
+		//		}
+		//		fmt.Println("user", user.ID)
+		//		getUserProjects(user.ID)
 	} else if *filename != "" {
-		configs, err := getGroupConfigs(*filename)
+		configs, err := getConfigs(*filename)
 		if err != nil {
 			panic(err)
 		}
-		processProjects(configs, *destroy)
+		p := NewProvisioner(configs)
+		p.ProcessConfigs(*destroy)
 	}
 }

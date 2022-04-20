@@ -6,9 +6,21 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
+type IssueService struct {
+	*BaseService
+}
+
 type IssueType struct {
 	Title string `json:"title,omitempty" yaml:"title,omitempty"`
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+func NewIssueService(p *Provisioner) *IssueService {
+	return &IssueService{
+		BaseService: &BaseService{
+			provisioner: p,
+		},
+	}
 }
 
 const (
@@ -32,9 +44,9 @@ func getIssueType(issueType string) *string {
 	return gitlab.String(s)
 }
 
-func (pc ProjectCtx) createIssues() {
+func (i *IssueService) Create(pc *ProjectCtx) {
 	for _, issue := range pc.Project.Issues {
-		_, _, err := pc.Client.Issues.CreateIssue(pc.ProjectID, &gitlab.CreateIssueOptions{
+		_, _, err := i.provisioner.Client.Issues.CreateIssue(pc.ProjectID, &gitlab.CreateIssueOptions{
 			Title:     &issue.Title,
 			IssueType: getIssueType(issue.Type),
 		})
@@ -44,7 +56,4 @@ func (pc ProjectCtx) createIssues() {
 			fmt.Printf("[INFO] Issue `%s` created for project `%s`.\n", issue.Title, pc.ProjectID)
 		}
 	}
-}
-
-func replaceIssues(pc *ProjectCtx, api API) {
 }

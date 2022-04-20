@@ -11,9 +11,13 @@ This project **only** supports the *creation* of the following `GitLab` objects:
 - [Projects]
 - [Invites]
 - [Issues]
+- [Labels (project)]
+- [Merge Requests]
 - [Releases]
+- Subgroups
 
 Its intent is to **only** create them with **only** the required configuration parameters.  If you need something more customized, you'll have to do that yourself.
+
 
 ## Requirements
 
@@ -72,6 +76,23 @@ A list of `Issue` objects composed of:
         - `Issue` (default)
         - `TestCase`
 
+### [`labels`]
+
+A list of project `Label` objects composed of:
+
+- `name` (string)
+- `color` (string)
+- `description` (string)
+- `priority` (int)
+
+### [`merge_requests`]
+
+A list of project `MergeRequests` objects composed of:
+
+- `source_branch` (string)
+- `target_branch` (string)
+- `title` (string)
+
 ### [`releases`]
 
 A list of `Release` objects composed of:
@@ -85,6 +106,8 @@ A list of `Release` objects composed of:
 - `released_at` ([`time.Time`])
 
 > For full examples in both `yaml` and `json`, see the `examples/` directory.
+
+### Subgroups
 
 ## Examples
 
@@ -125,6 +148,10 @@ This project uses the [`go-gitlab`] client library.
 [`invites`]: https://docs.gitlab.com/ee/api/invitations.html
 [Issues]: https://docs.gitlab.com/ee/api/issues.html
 [`issues`]: https://docs.gitlab.com/ee/api/issues.html
+[Labels (project)]: https://docs.gitlab.com/ee/api/labels.html
+[`labels`]: https://docs.gitlab.com/ee/api/labels.html
+[Merge Requests]: https://docs.gitlab.com/ee/api/merge_requests.html
+[`merge_requests`]: https://docs.gitlab.com/ee/api/merge_requests.html
 [Releases]: https://docs.gitlab.com/ee/api/releases/
 [`releases`]: https://docs.gitlab.com/ee/api/releases/
 [`GitLab` API token]: https://docs.gitlab.com/ee/security/token_overview.html

@@ -6,9 +6,21 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
+type InviteService struct {
+	*BaseService
+}
+
 type Invite struct {
 	AccessLevel string `json:"access_level,omitempty" yaml:"access_level,omitempty"`
 	Email       string `json:"email,omitempty" yaml:"email,omitempty"`
+}
+
+func NewInviteService(p *Provisioner) *InviteService {
+	return &InviteService{
+		BaseService: &BaseService{
+			provisioner: p,
+		},
+	}
 }
 
 // https://docs.gitlab.com/ee/development/permissions.html#members
@@ -43,9 +55,9 @@ func getAccessLevel(accessLevel string) *gitlab.AccessLevelValue {
 	return gitlab.AccessLevel(v)
 }
 
-func (pc ProjectCtx) createInvites() {
+func (i *InviteService) Create(pc *ProjectCtx) {
 	for _, invite := range pc.Project.Invites {
-		_, _, err := pc.Client.Invites.ProjectInvites(pc.ProjectID, &gitlab.InvitesOptions{
+		_, _, err := i.provisioner.Client.Invites.ProjectInvites(pc.ProjectID, &gitlab.InvitesOptions{
 			Email:       &invite.Email,
 			AccessLevel: getAccessLevel(invite.AccessLevel),
 		})
@@ -55,7 +67,4 @@ func (pc ProjectCtx) createInvites() {
 			fmt.Printf("[INFO] Invite for `%s` sent for project `%s`.\n", invite.Email, pc.ProjectID)
 		}
 	}
-}
-
-func replaceInvites(pc *ProjectCtx, api API) {
 }

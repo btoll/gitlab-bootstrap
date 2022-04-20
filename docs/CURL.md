@@ -13,9 +13,9 @@ $ curl -X GET \
 ### Create
 ```
 $ curl -X POST \
-    --data '{"path": "gl-test", "name": "derp"}' \
     --header "PRIVATE-TOKEN: $GITLAB_API_PRIVATE_TOKEN" \
     --header "Content-Type: application/json" \
+    --data '{"path": "gl-test", "name": "derp"}' \
     https://gitlab.com/api/v4/groups
 ```
 
@@ -91,9 +91,18 @@ $ curl -X GET \
 
 ```
 $ curl -X POST \
-    --data '{"path": "herp", "name": "herp", "template_name": "hugo"}' \
     --header "PRIVATE-TOKEN: $GITLAB_API_PRIVATE_TOKEN" \
     --header "Content-Type: application/json" \
+    --data '{"path": "herp", "name": "herp", "template_name": "hugo"}' \
     https://gitlab.com/api/v4/projects
+```
+
+### Create Merge Request
+
+```
+$ curl -X POST \
+    --header "PRIVATE-TOKEN: $GITLAB_API_PRIVATE_TOKEN" \
+    -d 'source_branch=master&target_branch=foo&title=test' \
+    https://gitlab.com/api/v4/projects/35552700/merge_requests
 ```
 

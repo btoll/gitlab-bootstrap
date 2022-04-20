@@ -11,14 +11,26 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type ReleaseService struct {
+	*BaseService
+}
+
 type Release struct {
-	Name        string                      `json:"name,omitempty" ymal:"name,omitempty"`
-	TagName     string                      `json:"tag_name,omitempty" ymal:"tag_name,omitempty"`
-	Description string                      `json:"description,omitempty" ymal:"description,omitempty"`
-	Ref         *string                     `json:"ref,omitempty" ymal:"ref,omitempty"`
-	Milestones  []string                    `json:"milestones,omitempty" ymal:"milestones,omitempty"`
-	Assets      gitlab.ReleaseAssetsOptions `json:"assets,omitempty" ymal:"assets,omitempty"`
-	ReleasedAt  time.Time                   `json:"released_at,omitempty" ymal:"released_at,omitempty"`
+	Name        string                      `json:"name,omitempty" yaml:"name,omitempty"`
+	TagName     string                      `json:"tag_name,omitempty" yaml:"tag_name,omitempty"`
+	Description string                      `json:"description,omitempty" yaml:"description,omitempty"`
+	Ref         *string                     `json:"ref,omitempty" yaml:"ref,omitempty"`
+	Milestones  []string                    `json:"milestones,omitempty" yaml:"milestones,omitempty"`
+	Assets      gitlab.ReleaseAssetsOptions `json:"assets,omitempty" yaml:"assets,omitempty"`
+	ReleasedAt  time.Time                   `json:"released_at,omitempty" yaml:"released_at,omitempty"`
+}
+
+func NewReleaseService(p *Provisioner) *ReleaseService {
+	return &ReleaseService{
+		BaseService: &BaseService{
+			provisioner: p,
+		},
+	}
 }
 
 //	Assets struct {
@@ -30,14 +42,14 @@ type Release struct {
 //		Links []*ReleaseLink `json:"links"`
 //	} `json:"assets"`
 
-func (pc ProjectCtx) createReleases() {
+func (r *ReleaseService) Create(pc *ProjectCtx) {
 	for _, release := range pc.Project.Releases {
 		if release.Ref == nil {
 			branch := "master"
 			release.Ref = &branch
 			fmt.Printf("[INFO] `ref` not defined for release `%s`, defaulting to `%s`.\n", release.Name, branch)
 		}
-		_, _, err := pc.Client.Releases.CreateRelease(pc.ProjectID, &gitlab.CreateReleaseOptions{
+		_, _, err := r.provisioner.Client.Releases.CreateRelease(pc.ProjectID, &gitlab.CreateReleaseOptions{
 			Name:        &release.Name,
 			Ref:         release.Ref,
 			TagName:     &release.TagName,
@@ -55,7 +67,7 @@ func (pc ProjectCtx) createReleases() {
 }
 
 // TODO: Support pagination.
-func getReleases(filename string) ([]Release, error) {
+func (r *ReleaseService) Get(filename string) ([]Release, error) {
 	content, err := getFileContents(filename)
 	if err != nil {
 		panic(err)
@@ -74,13 +86,13 @@ func getReleases(filename string) ([]Release, error) {
 	return releases, err
 }
 
-func replaceReleases(pc *ProjectCtx, api API) {
+func (r *ReleaseService) Replace(pc *ProjectCtx, api API) {
 	// Note that the `releases` var in each block is a different type:
 	// - []*gitlab.Release
 	// - []Release
 
 	if api.ProjectID != nil {
-		releases, _, err := pc.Client.Releases.ListReleases(*api.ProjectID, &gitlab.ListReleasesOptions{})
+		releases, _, err := r.provisioner.Client.Releases.ListReleases(*api.ProjectID, &gitlab.ListReleasesOptions{})
 		if err != nil {
 			panic(err)
 		}
@@ -98,7 +110,7 @@ func replaceReleases(pc *ProjectCtx, api API) {
 		}
 		pc.Project.Releases = r
 	} else {
-		releases, err := getReleases(*api.Filename)
+		releases, err := r.Get(*api.Filename)
 		if err != nil {
 			panic(err)
 		}
