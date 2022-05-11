@@ -64,7 +64,7 @@ func (i *InviteService) Create(pc *ProjectCtx) {
 		if err != nil {
 			fmt.Printf("[ERROR] Invite for `%s` could not be sent for project `%s` -- %s\n", invite.Email, pc.ProjectID, err)
 		} else {
-			fmt.Printf("[INFO] Invite for `%s` sent for project `%s`.\n", invite.Email, pc.ProjectID)
+			fmt.Printf("[INFO] Sent an invite for `%s` for project `%s`.\n", invite.Email, pc.ProjectID)
 		}
 	}
 }

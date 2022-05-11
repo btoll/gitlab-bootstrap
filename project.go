@@ -9,11 +9,13 @@ import (
 type ProjectService struct {
 	*BaseService
 }
+
 type Project struct {
 	Name          string         `json:"name,omitempty" yaml:"name,omitempty"`
 	TplName       string         `json:"tpl_name,omitempty" yaml:"tpl_name,omitempty"`
 	Visibility    string         `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 	API           *[]API         `json:"api,omitempty" yaml:"api,omitempty"`
+	Branches      []Branch       `json:"branches,omitempty" yaml:"branches,omitempty"`
 	Invites       []Invite       `json:"invites,omitempty" yaml:"invites,omitempty"`
 	Issues        []IssueType    `json:"issues,omitempty" yaml:"issues,omitempty"`
 	Labels        []Label        `json:"labels,omitempty" yaml:"labels,omitempty"`
@@ -59,6 +61,10 @@ func (p *ProjectService) Create(pc *ProjectCtx) {
 	} else {
 		fmt.Printf("[SUCCESS] Created project `%s`\n", pc.ProjectID)
 		fmt.Printf("git clone git@gitlab.com:%s.git\n", pc.ProjectID)
+
+		if len(pc.Project.Branches) > 0 {
+			p.provisioner.Branches.Create(pc)
+		}
 
 		if len(pc.Project.Invites) > 0 {
 			p.provisioner.Invites.Create(pc)

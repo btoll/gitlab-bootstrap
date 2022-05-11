@@ -9,6 +9,7 @@ The goal of this project is a simple one: quickly and easily create as many `Git
 This project **only** supports the *creation* of the following `GitLab` objects:
 
 - [Projects]
+- [Branches]
 - [Invites]
 - [Issues]
 - [Labels (project)]
@@ -49,6 +50,13 @@ A list of `Project` objects composed of:
 - [`invites`](#invites) (list of `Invites`)
 - [`issues`](#issues) (list of `Issues`)
 - [`releases`](#releases) (list of `Releases`)
+
+### [`branches`]
+
+A list of project `branches` objects composed of:
+
+- `branch` (string)
+- `ref` (string)
 
 ### [`invites`]
 
@@ -144,6 +152,8 @@ $ go run main.go group.go project.go user.go -user btoll
 This project uses the [`go-gitlab`] client library.
 
 [Projects]: https://docs.gitlab.com/ee/api/projects.html
+[Branches]: https://docs.gitlab.com/ee/api/branches.html
+[`branches`]: https://docs.gitlab.com/ee/api/branches.html
 [Invites]: https://docs.gitlab.com/ee/api/invitations.html
 [`invites`]: https://docs.gitlab.com/ee/api/invitations.html
 [Issues]: https://docs.gitlab.com/ee/api/issues.html

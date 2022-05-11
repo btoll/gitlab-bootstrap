@@ -61,7 +61,7 @@ func (r *ReleaseService) Create(pc *ProjectCtx) {
 		if err != nil {
 			fmt.Printf("[ERROR] Release `%s` could not be created for project `%s` -- %s\n", release.Name, pc.ProjectID, err)
 		} else {
-			fmt.Printf("[INFO] Release `%s` created for project `%s`.\n", release.Name, pc.ProjectID)
+			fmt.Printf("[INFO] Created release `%s` for project `%s`.\n", release.Name, pc.ProjectID)
 		}
 	}
 }

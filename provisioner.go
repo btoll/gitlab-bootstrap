@@ -21,6 +21,7 @@ type Provisioner struct {
 
 	Configs []Group
 
+	Branches      *BranchService
 	Groups        *GroupService
 	Invites       *InviteService
 	Issues        *IssueService
@@ -48,6 +49,7 @@ func NewProvisioner(configs []Group) *Provisioner {
 		Configs: configs,
 	}
 
+	p.Branches = NewBranchService(p)
 	p.Groups = NewGroupService(p)
 	p.Invites = NewInviteService(p)
 	p.Issues = NewIssueService(p)

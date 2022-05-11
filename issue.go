@@ -53,7 +53,7 @@ func (i *IssueService) Create(pc *ProjectCtx) {
 		if err != nil {
 			fmt.Printf("[ERROR] Issue `%s` could not be created for project `%s` -- %s\n", issue.Title, pc.ProjectID, err)
 		} else {
-			fmt.Printf("[INFO] Issue `%s` created for project `%s`.\n", issue.Title, pc.ProjectID)
+			fmt.Printf("[INFO] Created issue `%s` for project `%s`.\n", issue.Title, pc.ProjectID)
 		}
 	}
 }

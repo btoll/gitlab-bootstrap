@@ -39,8 +39,7 @@ func (g *GroupService) CreateSubgroup(gr Group) *gitlab.Group {
 		panic("Parent doesn't exist in groups map.")
 	}
 
-	var groupVisibility gitlab.VisibilityValue
-	groupVisibility = "public"
+	var groupVisibility gitlab.VisibilityValue = "public"
 	groupPath := url.PathEscape(fmt.Sprintf("%s%s", gr.Group, "1"))
 	groupName := url.PathEscape(gr.Group)
 	group, _, err := g.provisioner.Client.Groups.CreateGroup(&gitlab.CreateGroupOptions{
