@@ -15,10 +15,12 @@ This project **only** supports the *creation* of the following `GitLab` objects:
 - [Labels (project)]
 - [Merge Requests]
 - [Releases]
+- [Wikis]
 - Subgroups
 
-Its intent is to **only** create them with **only** the required configuration parameters.  If you need something more customized, you'll have to do that yourself.
+Its intent is to **only** create them with **only** the required configuration parameters.  The reasoning is to support its only use case, which is just to "bootstrap" one or more projects with all the fixings.  It doesn't really matter what the data **is**, as long as it is **there**.
 
+If you need something more customized, you'll have to do that yourself.
 
 ## Requirements
 
@@ -113,6 +115,11 @@ A list of `Release` objects composed of:
 - `assets` ([`gitlab.ReleaseAssetsOptions`])
 - `released_at` ([`time.Time`])
 
+### [`wikis`]
+
+- `title` (string)
+- `content` (string)
+
 > For full examples in both `yaml` and `json`, see the `examples/` directory.
 
 ### Subgroups
@@ -143,8 +150,8 @@ $ gitlab-client -file examples/gitlab.yaml -destroy
 If you don't want to compile, you can use `go run`:
 
 ```
-$ go run main.go group.go project.go user.go -file examples/gitlab.yaml
-$ go run main.go group.go project.go user.go -user btoll
+$ go run *.go -file examples/gitlab.yaml
+$ go run *.go -user btoll
 ```
 
 ## Acknowledgments
@@ -164,6 +171,8 @@ This project uses the [`go-gitlab`] client library.
 [`merge_requests`]: https://docs.gitlab.com/ee/api/merge_requests.html
 [Releases]: https://docs.gitlab.com/ee/api/releases/
 [`releases`]: https://docs.gitlab.com/ee/api/releases/
+[Wikis]: https://docs.gitlab.com/ee/api/wikis.html
+[`wikis`]: https://docs.gitlab.com/ee/api/wikis.html
 [`GitLab` API token]: https://docs.gitlab.com/ee/security/token_overview.html
 [problems creating new groups]: https://gitlab.com/gitlab-org/gitlab/-/issues/244345
 [Members API values]: https://docs.gitlab.com/ee/development/permissions.html#members

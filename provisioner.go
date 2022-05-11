@@ -29,6 +29,7 @@ type Provisioner struct {
 	MergeRequests *MergeRequestService
 	Projects      *ProjectService
 	Releases      *ReleaseService
+	Wiki          *WikiService
 	//	Users    *UserService
 }
 
@@ -57,6 +58,7 @@ func NewProvisioner(configs []Group) *Provisioner {
 	p.MergeRequests = NewMergeRequestService(p)
 	p.Projects = NewProjectService(p)
 	p.Releases = NewReleaseService(p)
+	p.Wiki = NewWikiService(p)
 	//	p.Users = NewUserService(p)
 
 	return p

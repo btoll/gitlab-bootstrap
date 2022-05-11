@@ -21,6 +21,7 @@ type Project struct {
 	Labels        []Label        `json:"labels,omitempty" yaml:"labels,omitempty"`
 	MergeRequests []MergeRequest `json:"merge_requests,omitempty" yaml:"merge_requests,omitempty"`
 	Releases      []Release      `json:"releases,omitempty" yaml:"releases,omitempty"`
+	Wiki          *Wiki          `json:"wiki,omitempty" yaml:"wiki,omitempty"`
 }
 
 type API struct {
@@ -47,6 +48,11 @@ type ProjectCtx struct {
 //type replaceFunc map[string]func(*ProjectCtx, API)
 
 func (p *ProjectService) Create(pc *ProjectCtx) {
+	var b bool
+	if pc.Project.Wiki != nil {
+		b = true
+	}
+
 	var visibility gitlab.VisibilityValue = "public"
 	_, _, err := p.provisioner.Client.Projects.CreateProject(&gitlab.CreateProjectOptions{
 		Name:         &pc.Project.Name,
@@ -54,6 +60,7 @@ func (p *ProjectService) Create(pc *ProjectCtx) {
 		Path:         &pc.Project.Name,
 		TemplateName: &pc.Project.TplName,
 		Visibility:   &visibility,
+		WikiEnabled:  &b,
 	})
 
 	if err != nil {
@@ -84,6 +91,10 @@ func (p *ProjectService) Create(pc *ProjectCtx) {
 
 		if len(pc.Project.Releases) > 0 {
 			p.provisioner.Releases.Create(pc)
+		}
+
+		if pc.Project.Wiki != nil {
+			p.provisioner.Wiki.Create(pc)
 		}
 	}
 }
