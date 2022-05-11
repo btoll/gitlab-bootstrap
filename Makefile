@@ -10,6 +10,7 @@ BIN_WIN=${BIN_NAME}_${ARCH}-${WIN}
 .PHONY: build clean debug lint
 
 build:
+	${CC} build
 	${CC} build -o ${BIN_NATIVE}
 	GOARCH=${ARCH} GOOS=${MACOS} ${CC} build -o ${BIN_MACOS}
 	GOARCH=${ARCH} GOOS=${WIN} ${CC} build -o ${BIN_WIN}
@@ -22,7 +23,7 @@ clean:
 	rm -f ${BIN_NAME}
 
 debug:
-	go build
+	${CC} build
 	dlv exec ./${BIN_NAME} -- --file examples/gitlab.json
 
 lint:
