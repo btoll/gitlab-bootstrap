@@ -16,7 +16,7 @@ This project **only** supports the *creation* of the following `GitLab` objects:
 - [Merge Requests]
 - [Releases]
 - [Wikis]
-- Subgroups
+- [Subgroups]
 
 Its intent is to **only** create them with **only** the required configuration parameters.  The reasoning is to support its only use case, which is just to "bootstrap" one or more projects with all the fixings.  It doesn't really matter what the data **is**, as long as it is **there**.
 
@@ -122,9 +122,39 @@ A list of `Release` objects composed of:
 
 > For full examples in both `yaml` and `json`, see the `examples/` directory.
 
-### Subgroups
+### [`subgroups`]
+
+To create a subgroup, first make sure that the parent group has been defined.  The subgroup will reference its parent group through the `parent` field, so this ordering is a necessary requirement.
+
+This method of referencing a parent was chosen to avoid nesting in the subgroups which would make the data formats harder to read and understand at a glance.
+
+```
+...
+[
+    {
+        "group": "gl-group",
+        "projects": [
+            {
+                ...
+            }
+        ]
+    {
+    },
+    {
+        "group": "gl-subgroup",
+        "parent": "gl-group",
+        "projects": [
+            {
+               ...
+            }
+        ]
+    }
+]
+```
 
 ## Examples
+
+There are several examples in the `./examples` folder of configs in both `json` and `yaml` formats, both neither are exhaustive.  They should, however, give a good idea of how the configuration should be structured.
 
 ### Creating Projects
 
@@ -173,6 +203,8 @@ This project uses the [`go-gitlab`] client library.
 [`releases`]: https://docs.gitlab.com/ee/api/releases/
 [Wikis]: https://docs.gitlab.com/ee/api/wikis.html
 [`wikis`]: https://docs.gitlab.com/ee/api/wikis.html
+[Subgroups]: https://docs.gitlab.com/ee/user/group/subgroups/
+[`subgroups`]: https://docs.gitlab.com/ee/user/group/subgroups/
 [`GitLab` API token]: https://docs.gitlab.com/ee/security/token_overview.html
 [problems creating new groups]: https://gitlab.com/gitlab-org/gitlab/-/issues/244345
 [Members API values]: https://docs.gitlab.com/ee/development/permissions.html#members

@@ -99,6 +99,99 @@
                 "visibility": "public"
             }
         ]
+    },
+    {
+        "group": "gl-subgroup",
+        "parent": "gl-group",
+        "projects": [
+            {
+                "name": "quux13",
+                "tpl_name": "hugo",
+                "visibility": "public",
+                "invites": [
+                    {
+                        "email": "btoll@taos.com",
+                        "access_level": "Guest"
+                    },
+                    {
+                        "email": "iamkilgoretroutdealwithit@gmail.com",
+                        "access_level": "Maintainer"
+                    }
+                ],
+                "issues": [
+                    {
+                        "title": "hot",
+                        "type": "TestCase"
+                    },
+                    {
+                        "title": "damn",
+                        "type": "Incident"
+                    }
+                ],
+                "releases": [
+                    {
+                        "name": "church",
+                        "ref": "master",
+                        "tag_name": "test1.0"
+                    },
+                    {
+                        "name": "yard",
+                        "ref": "master",
+                        "tag_name": "test2.0"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "group": "gl-subsubgroup",
+        "parent": "gl-subgroup",
+        "projects": [
+            {
+                "name": "jcs13",
+                "tpl_name": "hugo",
+                "visibility": "public",
+                "branches": [
+                    {
+                        "branch": "henry",
+                        "ref": "master",
+                        "protected": true
+                    },
+                    {
+                        "branch": "goat",
+                        "ref": "master"
+                    }
+                ],
+                "invites": [
+                    {
+                        "email": "btoll@taos.com",
+                        "access_level": "Guest"
+                    },
+                    {
+                        "email": "iamkilgoretroutdealwithit@gmail.com",
+                        "access_level": "Maintainer"
+                    }
+                ],
+                "issues": [
+                    {
+                        "title": "serge",
+                        "type": "Incident"
+                    }
+                ],
+                "releases": [
+                    {
+                        "name": "yikes!",
+                        "ref": "master",
+                        "tag_name": "test1.0"
+                    }
+                ]
+            },
+            {
+                "name": "crunch",
+                "tpl_name": "android",
+                "visibility": "public"
+            }
+        ]
     }
 ]
 

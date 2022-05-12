@@ -1,9 +1,10 @@
 ---
-- name: gl-group
+- group: gl-group
   projects:
     - name: foo
       tpl_name: hugo
       visibility: public
+      wiki: true
       invites:
         - email: btoll@example.com
           access_level: Guest
@@ -36,4 +37,7 @@
       api:
         - name: releases
           project_id: 35034938
+
+- group: gl-subgroup
+  parent: gl-group
 
