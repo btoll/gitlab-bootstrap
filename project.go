@@ -107,16 +107,24 @@ func (p *ProjectService) Delete(pc *ProjectCtx) {
 		fmt.Printf("[SUCCESS] Deleted project `%s`\n", pc.ProjectID)
 	}
 
-	for k, v := range p.provisioner.Groups.Mapper {
-		if k != "gl-group" {
-			_, err = p.provisioner.Groups.Delete(v)
-			if err != nil {
-				fmt.Printf("[ERROR] Group `%s` could not be deleted -- %s\n", k, err)
-			} else {
-				fmt.Printf("[SUCCESS] Deleted group `%s`\n", k)
-			}
-		}
-	}
+	// TODO: Currently, only the parent group (i.e, "gl-group1") is added to the Mapper, so
+	// this isn't really doing anything (after all, we don't want to delete the parent group,
+	// and this is (poorly) making sure it's not doing that).
+	// Perhaps this should be activated when another sibling group to "gl-group1" would be needed
+	// to be deleted, but do we even have the ability to create a group at that same level through
+	// the API (see the note on why we haven't been able to create a parent group programmatically
+	// in the project README)?
+
+	//	for k, v := range p.provisioner.Groups.Mapper {
+	//		if k != "gl-group" {
+	//			_, err = p.provisioner.Groups.Delete(v)
+	//			if err != nil {
+	//				fmt.Printf("[ERROR] Group `%s` could not be deleted -- %s\n", k, err)
+	//			} else {
+	//				fmt.Printf("[SUCCESS] Deleted group `%s`\n", k)
+	//			}
+	//		}
+	//	}
 }
 
 // This doesn't take a receiver because it needs to pass a pointer to the funcmap.
