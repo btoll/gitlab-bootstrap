@@ -1,0 +1,1 @@
+curl --request POST --header "PRIVATE-TOKEN: $GITLAB_API_PRIVATE_TOKEN" --header "Content-Type: application/json" --data '{"path": "gl-group1", "name": "subgroup1", "parent_id": 45212731 }' "https://gitlab.example.com/api/v4/groups/"
