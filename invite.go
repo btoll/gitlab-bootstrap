@@ -68,3 +68,6 @@ func (i *InviteService) Create(pc *ProjectCtx) {
 		}
 	}
 }
+
+func replaceInvites(pc *ProjectCtx, api API) {
+}

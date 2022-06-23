@@ -57,3 +57,6 @@ func (i *IssueService) Create(pc *ProjectCtx) {
 		}
 	}
 }
+
+func replaceIssues(pc *ProjectCtx, api API) {
+}

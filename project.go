@@ -45,7 +45,7 @@ type ProjectCtx struct {
 	ProjectID string // projectID == NAMESPACE/PROJECT_NAME
 }
 
-//type replaceFunc map[string]func(*ProjectCtx, API)
+type replaceFunc map[string]func(*ProjectCtx, API)
 
 func (p *ProjectService) Create(pc *ProjectCtx) {
 	var b bool
@@ -128,15 +128,15 @@ func (p *ProjectService) Delete(pc *ProjectCtx) {
 }
 
 // This doesn't take a receiver because it needs to pass a pointer to the funcmap.
-//func (p *ProjectService) Replace() {
-//	funcmap := replaceFunc{
-//		"invites":  replaceInvites,
-//		"issues":   replaceIssues,
-//		"releases": replaceReleases,
-//	}
-//	if p.Project.API != nil {
-//		for _, field := range *p.Project.API {
-//			funcmap[field.Name](p, field)
-//		}
-//	}
-//}
+func (p *ProjectService) Replace(pc *ProjectCtx) {
+	funcmap := replaceFunc{
+		"invites":  replaceInvites,
+		"issues":   replaceIssues,
+		"releases": replaceReleases,
+	}
+	if pc.Project.API != nil {
+		for _, field := range *pc.Project.API {
+			funcmap[field.Name](pc, field)
+		}
+	}
+}

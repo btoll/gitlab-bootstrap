@@ -88,7 +88,7 @@ func (p *Provisioner) ProcessConfig(config Group, destroy bool) {
 		}
 		go func(pc ProjectCtx) {
 			if !destroy {
-				//				p.Projects.Replace()
+				p.Projects.Replace(&pc)
 				p.Projects.Create(&pc)
 			} else {
 				p.Projects.Delete(&pc)

@@ -86,13 +86,64 @@ func (r *ReleaseService) Get(filename string) ([]Release, error) {
 	return releases, err
 }
 
-func (r *ReleaseService) Replace(pc *ProjectCtx, api API) {
+func getReleases(filename string) ([]Release, error) {
+	content, err := getFileContents(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	var releases []Release
+	extension := filepath.Ext(filename)
+	if extension == ".json" {
+		err = json.Unmarshal(content, &releases)
+	} else if extension == ".yaml" {
+		err = yaml.Unmarshal(content, &releases)
+	} else {
+		err = errors.New("[ERROR] File extension not recognized, must be either `json` or `yaml`.")
+	}
+
+	return releases, err
+}
+
+//func (r *ReleaseService) Replace(pc *ProjectCtx, api API) {
+//	// Note that the `releases` var in each block is a different type:
+//	// - []*gitlab.Release
+//	// - []Release
+//
+//	if api.ProjectID != nil {
+//		releases, _, err := r.provisioner.Client.Releases.ListReleases(*api.ProjectID, &gitlab.ListReleasesOptions{})
+//		if err != nil {
+//			panic(err)
+//		}
+//
+//		var r []Release
+//		for _, release := range releases {
+//			r = append(r, Release{
+//				Name:        release.Name,
+//				TagName:     release.TagName,
+//				Description: release.Description,
+//				//					Ref:         release.Ref,
+//				//					Assets:     release.Assets,
+//				ReleasedAt: *release.ReleasedAt,
+//			})
+//		}
+//		pc.Project.Releases = r
+//	} else {
+//		releases, err := r.Get(*api.Filename)
+//		if err != nil {
+//			panic(err)
+//		}
+//		pc.Project.Releases = releases
+//	}
+//}
+
+func replaceReleases(pc *ProjectCtx, api API) {
 	// Note that the `releases` var in each block is a different type:
 	// - []*gitlab.Release
 	// - []Release
 
 	if api.ProjectID != nil {
-		releases, _, err := r.provisioner.Client.Releases.ListReleases(*api.ProjectID, &gitlab.ListReleasesOptions{})
+		releases, _, err := pc.Client.Releases.ListReleases(*api.ProjectID, &gitlab.ListReleasesOptions{})
 		if err != nil {
 			panic(err)
 		}
@@ -110,7 +161,7 @@ func (r *ReleaseService) Replace(pc *ProjectCtx, api API) {
 		}
 		pc.Project.Releases = r
 	} else {
-		releases, err := r.Get(*api.Filename)
+		releases, err := getReleases(*api.Filename)
 		if err != nil {
 			panic(err)
 		}
