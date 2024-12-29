@@ -67,7 +67,7 @@ func (g *GroupService) CreateSubgroup(gr Group) *gitlab.Group {
 //}
 
 func (g *GroupService) Delete(gid int) (*gitlab.Response, error) {
-	return g.provisioner.Client.Groups.DeleteGroup(gid)
+	return g.provisioner.Client.Groups.DeleteGroup(gid, &gitlab.DeleteGroupOptions{})
 }
 
 func (g *GroupService) Get(groupName string) (*gitlab.Group, error) {

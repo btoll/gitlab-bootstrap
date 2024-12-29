@@ -100,7 +100,7 @@ func (p *ProjectService) Create(pc *ProjectCtx) {
 }
 
 func (p *ProjectService) Delete(pc *ProjectCtx) {
-	_, err := p.provisioner.Client.Projects.DeleteProject(pc.ProjectID)
+	_, err := p.provisioner.Client.Projects.DeleteProject(pc.ProjectID, &gitlab.DeleteProjectOptions{})
 	if err != nil {
 		fmt.Printf("[ERROR] Project `%s` could not be deleted -- %s\n", pc.ProjectID, err)
 	} else {
